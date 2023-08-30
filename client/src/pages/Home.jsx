@@ -3,9 +3,11 @@ import { Typography, Grid } from "@mui/material";
 import { Box } from "@mui/system";
 import UserMenu from "../components/UserMenu";
 import FolderList from "../components/FolderList";
-import { Outlet } from "react-router-dom";
+import { Outlet,useLoaderData } from "react-router-dom";
 
-function Home(props) {
+function Home() {
+  const {folders} = useLoaderData();
+
   return (
     <>
       <Typography variant="h4" sx={{ mb: "20px" }}>
@@ -31,10 +33,7 @@ function Home(props) {
           }}
         >
           <FolderList
-            folders={[
-              { id: "1", name: "Plan for tet holiday" },
-              { id: "2", name: "Plan for vactions trip" },
-            ]}
+            folders={folders}
           />
         </Grid>
 
