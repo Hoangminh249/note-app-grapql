@@ -14,8 +14,8 @@ type Note {
 }
 
 type Author {
-    uid: String,
-    name:String,
+    uid: String!,
+    name:String!,
 }
 
 type Query {
@@ -25,6 +25,7 @@ type Query {
 }
 
 type Mutation {
+    addNote(content: String!, folderId: ID!): Note
     addFolder(name: String!): Folder,
     register(uid: String!, name:String!): Author
 }

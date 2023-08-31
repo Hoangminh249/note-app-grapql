@@ -16,7 +16,10 @@ function AuthProvider({ children }) {
       console.log({user});
       if (user?.uid) {
         setUser(user)
-        localStorage.setItem("accessToken", user.accessToken);
+        if (user.accessToken !== localStorage.getItem("accessToken")) {
+          localStorage.setItem("accessToken", user.accessToken);
+          window.location.reload();
+        }
         setIsloading(false);
         return
 

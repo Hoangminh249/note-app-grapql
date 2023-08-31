@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const noteSchema = new mongoose.Schema(
   {
     content: {
-      type: Sting,
+      type: String,
     },
     folderId: {
       type: String,
