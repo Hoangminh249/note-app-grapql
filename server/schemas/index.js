@@ -8,9 +8,12 @@ type Folder {
 
 }
 
+ scalar Date
+
 type Note {
   id:String!,
   content:String,
+  updatedAt: Date
 }
 
 type Author {
@@ -25,8 +28,9 @@ type Query {
 }
 
 type Mutation {
-    addNote(content: String!, folderId: ID!): Note
+    addNote(content: String!, folderId: ID!): Note,
     addFolder(name: String!): Folder,
+    updateNote(id: String!, content: String!): Note,
     register(uid: String!, name:String!): Author
 }
 `;

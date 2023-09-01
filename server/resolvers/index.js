@@ -2,14 +2,24 @@ import fakeDate from "../fakeDate/index.js";
 import AuthorModel from "../models/AuthorModel.js";
 import FolderModel from "../models/FolderModel.js";
 import NoteModel from "../models/NoteModel.js";
+import {GraphQLScalarType} from "graphql"
 
 export const resolvers = {
+  Date: new GraphQLScalarType({
+    name: "Date",
+    parseValue(value){
+      return new Date(value);
+    },
+    serialize(value) {
+      return value.toISOString();
+    }
+  }),
   Query: {
     folders: async (parent, args, context) => {
       const folders = await FolderModel.find({
         authorId: context.uid,
       }).sort({
-        updatedAt: "desc"
+        updatedAt: "desc",
       });
       console.log({ context });
       return folders;
@@ -17,31 +27,34 @@ export const resolvers = {
     folder: async (parent, args) => {
       const folderId = args.folderId;
       console.log(folderId);
-      const foundFolder = await FolderModel.findOne({
-        _id: folderId,
-      });
+      const foundFolder = await FolderModel.findById(folderId);
       return foundFolder;
     },
-    note: (parent, args) => {
+    note: async (parent, args) => {
       const noteId = args.noteId;
-      return fakeDate.notes.find((note) => note.id === noteId);
+      const note = await NoteModel.findById(noteId);
+      return note;
+      // return fakeDate.notes.find((note) => note.id === noteId);
     },
   },
   Folder: {
     author: async (parent, args) => {
       const authorId = parent.authorId;
       const author = await AuthorModel.findOne({
-        uid:authorId
-      })
+        uid: authorId,
+      });
       return author;
       // return {id:"123", name: "HM"}
     },
     notes: async (parent, args) => {
       console.log({ parent });
       const notes = await NoteModel.find({
-        folderId: parent.id
-      })
-      console.log({notes});
+        folderId: parent.id,
+      }).sort({
+        updatedAt: "desc",
+      });;
+      console.log({ notes });
+      return notes;
       // return fakeDate.notes.filter((note) => note.folderId === parent.id);
     },
   },
@@ -50,6 +63,11 @@ export const resolvers = {
       const newNote = new NoteModel(args);
       await newNote.save();
       return newNote;
+    },
+    updateNote: async (parent, args) => {
+      const noteId = args.id;
+      const note = await NoteModel.findByIdAndUpdate(noteId, args);
+      return note;
     },
     addFolder: async (parent, args, context) => {
       const newFolder = new FolderModel({ ...args, authorId: context.uid });

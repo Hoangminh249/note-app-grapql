@@ -1,12 +1,12 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
-import NodeList from "../components/NodeList";
+import NoteList from "../components/NoteList";
 import Note from "../components/Note";
 import AuthProvider from "../context/AuthProvider";
 import Errorpage from "../pages/Errorpage";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import { foldersLoader } from "../utils/folderUtils";
-import { addNewNote, noteLoader, notesLoader } from "../utils/NoteUtils";
+import { addNewNote, noteLoader, notesLoader, updateNote } from "../utils/NoteUtils";
 import ProtectedRoute from "./ProtectedRoute";
 
 const AuthLayout = () => {
@@ -35,7 +35,7 @@ export default createBrowserRouter([
             loader: foldersLoader,
             children: [
               {
-                element: <NodeList />,
+                element: <NoteList />,
                 path: `folders/:folderId`,
                 action: addNewNote,
                 loader: notesLoader,
@@ -43,6 +43,7 @@ export default createBrowserRouter([
                   {
                     element: <Note />,
                     path: `note/:noteId`,
+                    action: updateNote,
                     loader: noteLoader,
                   },
                 ],

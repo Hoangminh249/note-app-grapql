@@ -1,22 +1,54 @@
-import React, { useState } from "react";
-import { Grid, List, Card, CardContent, Typography, Tooltip, IconButton } from "@mui/material";
-import { Link, Outlet, useParams, useLoaderData,useSubmit } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  Grid,
+  List,
+  Card,
+  CardContent,
+  Typography,
+  Tooltip,
+  IconButton,
+} from "@mui/material";
+import {
+  Link,
+  Outlet,
+  useParams,
+  useLoaderData,
+  useSubmit,
+  useNavigate,
+} from "react-router-dom";
 import { Box } from "@mui/system";
 import { NoteAddOutlined } from "@mui/icons-material";
+import moment from "moment";
 
-function NodeList() {
-  const { nodeId, folderId } = useParams();
-  const [activeNoteId, setActiveNoteId] = useState(nodeId);
+function NoteList() {
+  const { noteId, folderId } = useParams();
+  const [activeNoteId, setActiveNoteId] = useState(noteId);
   const { folder } = useLoaderData();
   const submit = useSubmit();
+  const navigate = useNavigate();
   console.log(folder);
 
+  useEffect(() => {
+    if (noteId) {
+      setActiveNoteId(noteId);
+      return;
+    }
+
+    if (folder?.notes?.[0]) {
+      navigate(`note/${folder.notes[0].id}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [noteId, folder.notes]);
+
   const handleAddNewNote = () => {
-    submit({
-      content: "",
-      folderId
-    }, {method: "POST", action: `/folders/${folderId}`})
-  }
+    submit(
+      {
+        content: "",
+        folderId,
+      },
+      { method: "POST", action: `/folders/${folderId}` }
+    );
+  };
 
   return (
     <Grid container height="100%">
@@ -35,7 +67,13 @@ function NodeList() {
       >
         <List
           subheader={
-            <Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Typography sx={{ fontWeight: "bold" }}>Notes</Typography>
               <Tooltip title="add Note" onClick={handleAddNewNote}>
                 <IconButton size="small">
@@ -45,7 +83,7 @@ function NodeList() {
             </Box>
           }
         >
-          {folder.notes.map(({ id, content }) => {
+          {folder.notes.map(({ id, content, updatedAt }) => {
             return (
               <Link
                 key={id}
@@ -67,6 +105,9 @@ function NodeList() {
                         __html: `${content.substring(0, 30) || "Empty"}`,
                       }}
                     />
+                    <Typography sx={{ fontSize: "10px" }}>
+                      {moment(updatedAt).format("MMMM Do YYYY, h:mm:ss a")}
+                    </Typography>
                   </CardContent>
                 </Card>
               </Link>
@@ -82,5 +123,4 @@ function NodeList() {
   );
 }
 
-export default NodeList;
-Node;
+export default NoteList;

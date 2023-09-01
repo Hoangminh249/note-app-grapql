@@ -8,6 +8,7 @@ export const notesLoader = async ({ params: { folderId } }) => {
         notes {
           id
           content
+          updatedAt
         }
       }
     }`;
@@ -22,7 +23,7 @@ export const notesLoader = async ({ params: { folderId } }) => {
 };
 
 export const noteLoader = async ({ params: { noteId } }) => {
-  const query = `query Folder($noteId: String) {
+  const query = `query Note($noteId: String) {
         note(noteId: $noteId) {
           content
           id
@@ -60,3 +61,26 @@ export const addNewNote = async ({ params, request }) => {
 
   return addNote;
 };
+
+export const updateNote = async ({ params, request}) => {
+  const updatedNote = await request.formData();
+  const formDataObj = {};
+  updatedNote.forEach((value, key) => (formDataObj[key] = value));
+  
+  console.log({updatedNote, formDataObj});
+  const query = `mutation Mutation($id: String!, $content: String!) {
+    updateNote(id: $id, content: $content) {
+      id
+      content,
+    }
+  }`;
+
+  const {updateNote} = await graphqlRequest({
+    query,
+    variables: formDataObj
+  })
+
+  console.log({updateNote})
+
+  return updateNote;
+}
