@@ -31,6 +31,16 @@ type Mutation {
     addNote(content: String!, folderId: ID!): Note,
     addFolder(name: String!): Folder,
     updateNote(id: String!, content: String!): Note,
-    register(uid: String!, name:String!): Author
+    register(uid: String!, name:String!): Author,
+    pushNotification(content: String): Message
+}
+
+type Message {
+    message: String
+}
+
+type Subscription {
+    folderCreated: Message,
+    notification:Message
 }
 `;
